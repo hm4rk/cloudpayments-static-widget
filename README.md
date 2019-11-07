@@ -1,4 +1,4 @@
-# cloudpayments-addons
+# cloudpayments-static-widget
 
 Example:
 ```
