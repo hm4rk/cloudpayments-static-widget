@@ -10,9 +10,9 @@
             // ID of your account
             const PUBLIC_ID = 'test_api_00000000000000000000001';
             // URL where the user gets redirected to after the successful transaction
-            const SUCCESS_URL = 'http://www.google.com';
+            const SUCCESS_URL = 'http://www.yoursite.com/success';
             // URL where the user gets redirected to after the failed transaction
-            const FAILURE_URL = 'http://www.yahoo.com';
+            const FAILURE_URL = 'http://www.yoursite.com/failure';
 
             var getUrlParameter = function getUrlParameter(sParam) {
                 var sPageURL = window.location.search.substring(1),
@@ -40,13 +40,22 @@
                     accountId: pay_accountId
                 },
                     function (options) {
-                        $(location).attr('href', SUCCESS_URL);
+                        $(location).attr('href', addInvoiceIdToUrl(SUCCESS_URL, pay_invoiceId));
                     },
                     function (reason, options) {
-                        $(location).attr('href', FAILURE_URL);
+                        $(location).attr('href', addInvoiceIdToUrl(FAILURE_URL, pay_invoiceId));
                     });
             };
 
+            var addInvoiceIdToUrl = function (url, pay_invoiceId) {
+                if (url.includes('?')) {
+                    // Case when specified URL already includes page parameters
+                    return url + "&invoiceId=" + pay_invoiceId;
+                } else {
+                    // Case when specified URL doesn't include page parameters
+                    return url + "?invoiceId=" + pay_invoiceId;
+                }
+            }
 
             // Read variables from page params
             var pay_amount = getUrlParameter('amount');
@@ -57,12 +66,12 @@
 
             // Validate amount is received and is number
             if ((pay_amount == undefined) || (!$.isNumeric(pay_amount))) {
-                $(location).attr('href', FAILURE_URL);
+                $(location).attr('href', addInvoiceIdToUrl(FAILURE_URL, pay_invoiceId));
             }
 
             // Validate the rest of the options are specified
-            if ((pay_description == undefined) || (pay_currency == undefined)) {
-                $(location).attr('href', FAILURE_URL);
+            if ((pay_description == undefined) || (pay_currency == undefined) || (pay_invoiceId == undefined)) {
+                $(location).attr('href', addInvoiceIdToUrl(FAILURE_URL, pay_invoiceId));
             }
 
             // Call payment widget
