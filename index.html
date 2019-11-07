@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://widget.cloudpayments.ru/bundles/cloudpayments"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            var getUrlParameter = function getUrlParameter(sParam) {
+                var sPageURL = window.location.search.substring(1),
+                    sURLVariables = sPageURL.split('&'),
+                    sParameterName,
+                    i;
+
+                for (i = 0; i < sURLVariables.length; i++) {
+                    sParameterName = sURLVariables[i].split('=');
+
+                    if (sParameterName[0] === sParam) {
+                        return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+                    }
+                }
+            };
+
+            var pay = function (pay_amount, pay_publicId, pay_description, pay_currency, pay_invoiceId, pay_accountId, pay_successUrl, pay_failureUrl) {
+                var payments = new cp.CloudPayments();
+                payments.charge({
+                    publicId: pay_publicId,
+                    description: pay_description,
+                    amount: Number(pay_amount),
+                    currency: pay_currency,
+                    invoiceId: pay_invoiceId,
+                    accountId: pay_accountId
+                },
+                    function (options) {
+                        $(location).attr('href', pay_successUrl);
+                    },
+                    function (reason, options) {
+                        $(location).attr('href', pay_failureUrl);
+                    });
+            };
+
+
+            // Read variables from page params
+            var pay_amount = getUrlParameter('amount');
+            var pay_publicId = getUrlParameter('publicId');
+            var pay_description = getUrlParameter('description');
+            var pay_currency = getUrlParameter('currency');
+            var pay_invoiceId = getUrlParameter('invoiceId');
+            var pay_accountId = getUrlParameter('accountId');
+            var pay_successUrl = getUrlParameter('successUrl');
+            var pay_failureUrl = getUrlParameter('failureUrl');
+
+            // Validate amount is received and is number
+            if ((pay_amount == undefined) || (!$.isNumeric(pay_amount))) {
+                $(location).attr('href', pay_failureUrl);
+            }
+
+            // Validate the rest of the options are specified
+            if ((pay_publicId == undefined) || (pay_description == undefined) || (pay_currency == undefined)) {
+                $(location).attr('href', pay_failureUrl);
+            }
+
+            // Call payment widget
+            pay(pay_amount, pay_publicId, pay_description, pay_currency, pay_invoiceId, pay_accountId, pay_successUrl, pay_failureUrl);
+        });
+    </script>
+</head>
+
+<body>
+
+
+</body>
+
+</html>
