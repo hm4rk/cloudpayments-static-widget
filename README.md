@@ -14,6 +14,7 @@ http://www.yourhosthere.com?amount=123.12&description=Payment%20details&currency
 </ul>
 
 <h3>Make sure to define your Public ID and Success and Failure URLs</h3>
+
 ```
             // ID of your account
             const PUBLIC_ID = 'test_api_00000000000000000000001';
